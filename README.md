@@ -20,5 +20,5 @@ This includes:
 
 docker compose up -d
 
-Once everything boots up, go to Koji admin panel http://localhost:9100
-make a dragonite project and add ``http://dragonite:7272/reload`` in API host and tick Scanner!
+Once everything boots up, go to Koji admin panel http://localhost:9100 
+Make a dragonite project and add ``http://dragonite:7272/reload`` in API host and tick Scanner!
