@@ -1,5 +1,5 @@
 [general]
-login_delay = 20
+login_delay = 0  #As of now there is no login limit, this might change
 # seconds to sleep in-between PTC authing on one proxy
 
 # Whether raw worker stats are written
