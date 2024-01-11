@@ -1,0 +1,55 @@
+[general]
+login_delay = 20
+# seconds to sleep in-between PTC authing on one proxy
+
+# Whether raw worker stats are written
+stats = false
+
+# Host and Port used for the Dragonite API
+api_host = "0.0.0.0"
+api_port = 7272
+
+[koji]
+url = "http://koji:8080"
+bearer_token = "SuperSecretPassword!"
+
+#[prometheus]
+#enabled = true
+
+[tuning]
+#recycle_gmo_limit = 4900
+#recycle_encounter_limit = 9900
+#recycle_on_jail=false
+#minimum_account_reuse_hours = 169
+#location_delay = 0
+#fort_location_delay = 0
+
+#[accounts]
+#required_level = 30 # used for everything except leveling (quest can force level 31 at specific events)
+#leveling_level = 31 # used to stop leveling at certain level
+
+[rotom]
+endpoint = "ws://rotom:7071"
+secret = "SuperSecretPassword!"
+
+[logging]
+save = true
+#debug = false
+#max_size = 500 # MB
+#max_age = 30 # days
+
+[processors]
+# Golbat Endpoint is singular - and will configure an endpoint for raw sending and API
+golbat_endpoint = "http://golbat:9001"
+golbat_raw_bearer = "SuperSecretPassword!"
+golbat_api_secret = "SuperSecretPassword!"
+# if this is present then dragonite will not send raws to the httpendpoint - not used for API, be careful if you use grpc you still need 'golbat_endpoint' for API calls to Golbat
+golbat_grpc_endpoint = "golbat:50001"
+
+[db.dragonite]
+host = "db"
+port = 3306
+user = "root"
+password = "SuperSecretRootPassword!"
+name = "dragonite_db"
+pool_size = 1

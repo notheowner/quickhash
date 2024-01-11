@@ -1,0 +1,178 @@
+version: "3.7"
+services:
+  db:
+    image: mariadb:10.11
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --binlog-expire-logs-seconds=86400
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: SuperSecretRootPassword!
+      MYSQL_DATABASE: dragonite_db
+      MYSQL_USER: quickhash
+      MYSQL_PASSWORD: SuperSecretPassword!
+    ports:
+      - 3306:3306
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - ./database:/var/lib/mysql
+      #- ./my.cnf:/etc/mysql/conf.d/my.cnf # Example below
+      #- /etc/localtime:/etc/localtime:ro
+
+  pma:
+    image: phpmyadmin:latest
+    container_name: pma
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - 9200:80
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: SuperSecretRootPassword!
+      UPLOAD_LIMIT: 300M
+
+  dragonite:
+    image: ghcr.io/unownhash/dragonite-public:latest
+    container_name: dragonite
+    restart: unless-stopped
+    depends_on:
+      - db
+      - golbat
+    volumes:
+      - type: bind
+        source: ${PWD}/dragonite_config.toml
+        target: /dragonite/config.toml
+      # Optional volume if you want to have access to logs
+      - type: bind
+        source: ${PWD}/logs
+        target: /dragonite/logs
+    ports:
+      - "7272:7272" # change left one for external port
+    # If you want to use a non docker database enable following lines and
+    # change the Database URL to 'host.docker.internal'
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
+  admin:
+    image: ghcr.io/unownhash/dragonite-public-admin:latest
+    container_name: admin
+    restart: unless-stopped
+    environment:
+      ADMIN_GENERAL_HOST: 0.0.0.0
+      ADMIN_GENERAL_PORT: 7273
+
+      ADMIN_GENERAL_USERNAME: admin
+      ADMIN_GENERAL_PASSWORD: SuperSecretPassword!
+
+      ADMIN_DRAGONITE_API_ENDPOINT: http://dragonite:7272
+      ADMIN_DRAGONITE_API_SECRET: SuperSecretPassword!
+
+      ADMIN_GOLBAT_API_ENDPOINT: http://golbat:9001
+      ADMIN_GOLBAT_API_SECRET: SuperSecretPassword!
+    ports:
+      - '7273:7273' # change left one for external port
+
+  golbat:
+    image: ghcr.io/unownhash/golbat:main
+    container_name: golbat
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${PWD}/golbat_config.toml
+        target: /golbat/config.toml
+      # Optional volumes if you want to have access to logs and persist cache
+      - type: bind
+        source: ${PWD}/cache
+        target: /golbat/cache
+      - type: bind
+        source: ${PWD}/logs
+        target: /golbat/logs
+    ports:
+      - "9001:9001" # change left one for external port
+      - "50001:50001" # GRPC port, change left one for external port
+    # If you want to use a non docker database enable following lines and
+    # change the Database URL to 'host.docker.internal'
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
+  rotom:
+    image: ghcr.io/unownhash/rotom:main
+    container_name: rotom
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${PWD}/rotom_config.json
+        target: /rotom/config/local.json
+      # Optional volumes if you want to have access to logs and persist cache
+      - type: bind
+        source: ${PWD}/logs
+        target: /rotom/logs
+    ports:
+      - "7070:7070" # change left one for external port
+      - "7071:7071" # change left one for external port
+      - "7072:7072" # change left one for external port
+
+  koji:
+    image: ghcr.io/turtiesocks/koji:main
+    container_name: koji
+    restart: unless-stopped
+    environment:
+      # Your Golbat or RDM database
+      SCANNER_DB_URL: 'mysql://root:SuperSecretRootPassword!@db:3306/golbat_db'
+
+      # Your Dragonite (if using) or RDM database (if you're using a hybrid Golbat/RDM setup)
+      CONTROLLER_DB_URL: 'mysql://root:SuperSecretRootPassword!@db:3306/dragonite_db'
+
+      # Your Koji database
+      KOJI_DB_URL: 'mysql://root:SuperSecretRootPassword!@db:3306/koji_db'
+
+      # Max Database connections
+      MAX_CONNECTIONS: 100
+
+      # Your Koji API bearer token and client password
+      KOJI_SECRET: 'SuperSecretPassword!'
+
+      # Start latitude on initial client load
+      START_LAT: 0
+      # Start longitude on initial client load
+      START_LON: 0
+      # Nominatim URl used for searching and importing geofences from OSM
+      # NOMINATIM_URL: 'https://nominatim.openstreetmap.org' # highly recommended using your own
+      # Logging level | error | warn | info | debug | trace
+      LOG_LEVEL: info
+
+      # Memory limit for docker container
+      mem_limit: 2048M
+      # Memory reservation for docker container
+      mem_reservation: 256M
+      # CPU limit for docker container
+      # cpus: 2
+
+    ports:
+      - '9100:8080' # change left one for external port
+    # If you want to use a non docker database enable following lines and
+    # change the Database URL to 'host.docker.internal'
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
+
+  reactmap:
+    image: ghcr.io/watwowmap/reactmap:develop
+    container_name: reactmap
+    command: sh -c "yarn start"
+    restart: unless-stopped
+    volumes:
+      # All of these are optional - comment out whichever ones you aren't using
+      - ./server/src/configs/areas.json:/home/node/server/src/configs/areas.json
+      - ./server/src/configs/local.json:/home/node/server/src/configs/local.json
+      # - ./public/favicon/favicon.ico:/home/node/public/favicon/favicon.ico
+      # - ./example.env:/home/node/.env
+
+    security_opt:
+      # https://nodramadevops.com/2019/06/running-docker-application-containers-more-securely/
+      - no-new-privileges:true
+
+    ports:
+      - '9090:8080' # change left one for external port
+
+networks:
+  default:
+    name: quickhash
