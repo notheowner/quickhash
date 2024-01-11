@@ -16,3 +16,9 @@ This includes:
 * Rotom
 * Koji
 * ReactMap
+
+docker compose pull
+docker compose up -d
+
+Once everything boots up, go to Koji admin panel
+make a dragonite project and add http:dragonite:7272/reload in API host and tick Scanner
