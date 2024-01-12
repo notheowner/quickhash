@@ -15,8 +15,15 @@ This includes:
 * Golbat
 * Rotom
 * Koji
-* ReactMap
+* ReactMap(develop)
 
+If you uncomment the cache and logs binds, create the folders first:
+
+```console
+mkdir cache logs
+```
+
+Boot up
 
 ```console
 docker compose up -d

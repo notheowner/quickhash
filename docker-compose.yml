@@ -44,9 +44,9 @@ services:
         source: ${PWD}/dragonite_config.toml
         target: /dragonite/config.toml
       # Optional volume if you want to have access to logs
-      - type: bind
-        source: ${PWD}/logs
-        target: /dragonite/logs
+      # - type: bind
+      #   source: ${PWD}/logs
+      #   target: /dragonite/logs
     ports:
       - "7272:7272" # change left one for external port
     # If you want to use a non docker database enable following lines and
@@ -81,12 +81,12 @@ services:
         source: ${PWD}/golbat_config.toml
         target: /golbat/config.toml
       # Optional volumes if you want to have access to logs and persist cache
-      - type: bind
-        source: ${PWD}/cache
-        target: /golbat/cache
-      - type: bind
-        source: ${PWD}/logs
-        target: /golbat/logs
+      # - type: bind
+      #   source: ${PWD}/cache
+      #   target: /golbat/cache
+      # - type: bind
+      #   source: ${PWD}/logs
+      #   target: /golbat/logs
     ports:
       - "9001:9001" # change left one for external port
       - "50001:50001" # GRPC port, change left one for external port
@@ -103,9 +103,9 @@ services:
         source: ${PWD}/rotom_config.json
         target: /rotom/config/local.json
       # Optional volumes if you want to have access to logs and persist cache
-      - type: bind
-        source: ${PWD}/logs
-        target: /rotom/logs
+      # - type: bind
+      #   source: ${PWD}/logs
+      #   target: /rotom/logs
     ports:
       - "7070:7070" # change left one for external port
       - "7071:7071" # change left one for external port
