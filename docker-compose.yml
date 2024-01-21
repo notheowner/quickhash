@@ -69,6 +69,10 @@ services:
 
       ADMIN_GOLBAT_API_ENDPOINT: http://golbat:9001
       ADMIN_GOLBAT_API_SECRET: SuperSecretPassword!
+    # volumes:
+    #   - type: bind
+    #     source: ${PWD}/admin_config.toml
+    #     target: /admin/config.toml  
     ports:
       - '7273:7273' # change left one for external port
 

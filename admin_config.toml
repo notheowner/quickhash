@@ -1,0 +1,13 @@
+[general]
+host = "0.0.0.0"
+port = 7273
+username = "admin"
+password = "SuperSecretPassword!"
+
+[dragonite]
+api_endpoint = "http://dragonite:7272"
+api_secret = "SuperSecretPassword!"
+
+[golbat]
+api_endpoint = "http://golbat:9001"
+api_secret = "SuperSecretPassword!"

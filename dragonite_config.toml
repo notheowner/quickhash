@@ -34,9 +34,9 @@ secret = "SuperSecretPassword!"
 
 [logging]
 save = true
-#debug = false
-#max_size = 500 # MB
-#max_age = 30 # days
+debug = false
+max_size = 500 # MB
+max_age = 30 # days
 
 [processors]
 # Golbat Endpoint is singular - and will configure an endpoint for raw sending and API
